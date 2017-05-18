@@ -44,7 +44,7 @@
  class CybProbabilityFuzzyParameters : public CybAssess
 {	
 protected:
-	CybMatrix< pair<double, double> > pertinences;
+	CybMatrix< pair<double, double> > *pertinences;
 	int nIntervals;
 	
 public:

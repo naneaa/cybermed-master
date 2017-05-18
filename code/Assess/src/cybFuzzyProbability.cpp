@@ -29,6 +29,7 @@ CybFuzzyProbability::CybFuzzyProbability(int variables)
 
 CybFuzzyProbability::~CybFuzzyProbability()
 {
+	delete pertinences;
 }
 
 CybMatrix< pair<double, double> > CybFuzzyProbability::getPertinences()
@@ -51,16 +52,59 @@ void CybFuzzyProbability::setNIntervals(int nIntervals)
 	this->nIntervals = nIntervals;
 }
 
-void CybFuzzyProbability::calcPertinences()
+void CybFuzzyProbability::calcPertinences(float* auxdata)
 {
-	mfList<CybVectorND<float>*>* data = this->getData();
-	int size = data->pos(0)->getDimension();
+	int size = auxdata->size();
+	
+	// adicionar loop for(int i = 0; i < getVariablesNumber(); i++) ao redor
+	// pegar dados assim:
+	/*
+		mfList<CybVectorND<float>*>* data = this->getData();
+		int size = data->pos(0)->getDimension();
+	*/
 	
 	//1st - calculate sturges
-	int sturges = 1 + 
+	int sturges = 1 + (3.322*log(size));
 	
+	//2nd - get max and min
+	float max = auxdata->pos(0);
+	float min = auxdata->pos(0);
 	
+	for(int i = 1; i < size; i++){
+		if(max < auxdata[i])
+			max = auxdata[i];
+		if(min > auxdata[i])
+			min = auxdata[i];
+	}
 	
+	//3rd - calculate frequencies and relative frequencies	
+	CybVector< pair< pair<double, double>, double> > freq(sturges);
+	double step = (max - min)/sturges;
 	
+	for(int i = 0, i < sturges; i++){
+		freq[i].first.first = min + step * i;
+		freq[i].first.second = freq[i].first + step;
+	}
+	
+	for(int i = 0, i < sturges; i++)
+		freq[i].second = 0;
+
+	for(int j = 0, j < size; j++)
+		for(int i = 0, i < sturges; i++)
+			if(auxdata[j] >= req[i].first.first && auxdata[j] < req[i].first.second)
+				freq[i].second += 1;
+			
+	for(int i = 0, i < sturges; i++)
+		freq[i].second /= freq[i].second/size;
+	
+	//4th - calculate pertinences
+	double maxFreq = freq[0].second;
+	for(int i = 1; i < size; i++)
+		if(maxFreq < freq[i].second)
+			maxFreq = freq[i].second;
+		
+	for(int i = 0, i < sturges; i++)
+		for(int i = 0, i < sturges; i++)
+		freq[i].second /= freq[i].second/maxFreq;  
 	
 }
