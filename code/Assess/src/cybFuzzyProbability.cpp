@@ -21,6 +21,8 @@
 // Boston, MA 02110-1301, USA.
 // *****************************************************************
 
+#include "cybFuzzyProbability.h"
+
 CybFuzzyProbability::CybFuzzyProbability(int variables)
 	: CybAssess(variables)
 {
@@ -32,12 +34,12 @@ CybFuzzyProbability::~CybFuzzyProbability()
 	delete pertinences;
 }
 
-CybMatrix< pair<double, double> > CybFuzzyProbability::getPertinences()
+CybMatrix < pair< pair<double, double>, double> >* CybFuzzyProbability::getPertinences()
 {
 	return pertinences;
 }
 
-void CybFuzzyProbability::setPertinences(CybMatrix< pair<double, double> > pertinences)
+void CybFuzzyProbability::setPertinences(CybMatrix < pair< pair<double, double>, double> >*)
 {
 	this->pertinences = pertinences;
 }
@@ -52,59 +54,71 @@ void CybFuzzyProbability::setNIntervals(int nIntervals)
 	this->nIntervals = nIntervals;
 }
 
-void CybFuzzyProbability::calcPertinences(float* auxdata)
-{
-	int size = auxdata->size();
-	
-	// adicionar loop for(int i = 0; i < getVariablesNumber(); i++) ao redor
-	// pegar dados assim:
-	/*
-		mfList<CybVectorND<float>*>* data = this->getData();
-		int size = data->pos(0)->getDimension();
-	*/
+void CybFuzzyProbability::calcPertinences()
+{	
+	mfList<CybVectorND<float>*>* data = this->getData();
+	int size = data->pos(0)->getDimension();
 	
 	//1st - calculate sturges
-	int sturges = 1 + (3.322*log(size));
+	int sturges = round(1 + (3.322*log10(size)));
+	this->nIntervals = sturges;
+	this->pertinences = new CybMatrix < pair< pair<double, double>, double> >(sturges, getVariablesNumber());
 	
-	//2nd - get max and min
-	float max = auxdata->pos(0);
-	float min = auxdata->pos(0);
-	
-	for(int i = 1; i < size; i++){
-		if(max < auxdata[i])
-			max = auxdata[i];
-		if(min > auxdata[i])
-			min = auxdata[i];
-	}
-	
-	//3rd - calculate frequencies and relative frequencies	
-	CybVector< pair< pair<double, double>, double> > freq(sturges);
-	double step = (max - min)/sturges;
-	
-	for(int i = 0, i < sturges; i++){
-		freq[i].first.first = min + step * i;
-		freq[i].first.second = freq[i].first + step;
-	}
-	
-	for(int i = 0, i < sturges; i++)
-		freq[i].second = 0;
-
-	for(int j = 0, j < size; j++)
-		for(int i = 0, i < sturges; i++)
-			if(auxdata[j] >= req[i].first.first && auxdata[j] < req[i].first.second)
-				freq[i].second += 1;
-			
-	for(int i = 0, i < sturges; i++)
-		freq[i].second /= freq[i].second/size;
-	
-	//4th - calculate pertinences
-	double maxFreq = freq[0].second;
-	for(int i = 1; i < size; i++)
-		if(maxFreq < freq[i].second)
-			maxFreq = freq[i].second;
+	for(int i = 0; i < getVariablesNumber(); i++)
+	{
+		//2nd - get max and min
+		float max = data->pos(i)->operator[](0);
+		float min = data->pos(i)->operator[](0);
 		
-	for(int i = 0, i < sturges; i++)
-		for(int i = 0, i < sturges; i++)
-		freq[i].second /= freq[i].second/maxFreq;  
-	
+		for(int j = 1; j < size; j++){
+			if(max < data->pos(i)->operator[](j))
+				max = data->pos(i)->operator[](j);
+			if(min > data->pos(i)->operator[](j))
+				min = data->pos(i)->operator[](j);
+		}
+		
+		//3rd - calculate frequencies	
+		vector < pair < pair < double, double >, double > > freq(sturges);
+		double step = (max - min)/sturges;
+		
+		for(int l = 0; l < sturges; l++)
+		{
+			freq[l].first.first = min + step * l;
+			freq[l].first.second = freq[l].first.first + step;
+		}
+		
+		for(int l = 0; l < sturges; l++)
+			freq[l].second = 0;
+		
+		for(int j = 0; j < size; j++)
+			for(int l = 0; l < sturges; l++){
+				if(l == sturges - 1){
+					if(data->pos(i)->operator[](j) >= freq[l].first.first && data->pos(i)->operator[](j) <= freq[l].first.second)
+						freq[l].second += 1;
+				}else if(data->pos(i)->operator[](j) >= freq[l].first.first && data->pos(i)->operator[](j) < freq[l].first.second)
+					freq[l].second += 1;
+			}
+			
+		//for(int l = 0; l < sturges; l++)
+		//	cout << freq[l].first.first << " |- " << freq[l].first.second << "\t" << freq[l].second << endl;
+		//cout << endl;	
+		//4th - calculate relative frequencies
+		for(int l = 0; l < sturges; l++){
+			freq[l].second = freq[l].second/size;
+			//cout << freq[l].second << endl;
+		}
+		
+		//5th - calculate pertinences
+		double maxFreq = freq[0].second;
+		for(int l = 1; l < sturges; l++)
+			if(maxFreq < freq[l].second)
+				maxFreq = freq[l].second;
+				
+		for(int l = 0; l < sturges; l++)
+		{
+			(*pertinences)[l][i].first.first = freq[l].first.first;
+			(*pertinences)[l][i].first.second = freq[l].first.second;
+			(*pertinences)[l][i].second = freq[l].second/maxFreq;
+		} /*CybMatrix < pair< pair<double, double>, double> > *pertinences;*/
+	}
 }

@@ -21,20 +21,17 @@
 // Boston, MA 02110-1301, USA.
 // *****************************************************************
 
-#include "cybAssess.h"
-#include "cybMatrix.h"
-#include <vector>
+#include "cybFuzzyProbability.h"
 
-#ifndef _CYB_FuzzyProbability_H_
-#define _CYB_FuzzyProbability_H_
+#ifndef _CYB_FuzzyExponentialNaiveBayes_H_
+#define _CYB_FuzzyExponentialNaiveBayes_H_
 
 /**
- * @class	CybFuzzyProbability
- * @file	cybFuzzyProbability.h
- * @short	The base class for all Zadeh's Fuzzy Probability assess methods.
+ * @class	CybFuzzyExponentialNaiveBayes
+ * @file	CybFuzzyExponentialNaiveBayes.h
+ * @short	.
  *
- * This is base class for all assess methods based on Zadeh's 
- * Fuzzy Probability implemented for the CyberMed System.
+ * .
  *
  * @author	LabTEVE (http://www.de.ufpb.br/~labteve), Federal University of Paraiba
  * @version	3.1.1
@@ -42,39 +39,37 @@
  * 
  */
  
-class CybFuzzyProbability : public CybAssess
+class CybFuzzyExponentialNaiveBayes : public CybFuzzyProbability
 {	
-protected:
-	CybMatrix < pair< pair<double, double>, double> > *pertinences;
-	int nIntervals;
-	
-public:
-	
+
+	private:
+		CybVectorND<float> parameters;
+
+	public:
 	/**
 	 * Constructor.
 	 */
-	CybFuzzyProbability(int);
+	CybFuzzyExponentialNaiveBayes(int);
 	
 	/**
 	 * Destructor.
 	 */
-	~CybFuzzyProbability();
+	~CybFuzzyExponentialNaiveBayes();
 	
-	CybMatrix < pair< pair<double, double>, double> >* getPertinences();
+	CybVectorND<float> getParameters();
+	
+	void setParameters(CybVectorND<float>);
 
-	void setPertinences(CybMatrix < pair< pair<double, double>, double> >*);
-	
-	int getNIntervals();
-	
-	void setNIntervals(int);
-	
-	virtual void training() = 0;
+	virtual void training();
 
-	virtual double assessment(CybVectorND<float>*) = 0;
-		
-protected:
+	virtual double assessment(CybVectorND<float>*);
+	
+	protected:
+	
+	void parametersEstimation();
 
-	void calcPertinences();
+
+
 };
 
-#endif /*_CYB_FuzzyProbability_H_*/
+#endif
