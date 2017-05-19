@@ -34,12 +34,12 @@ CybFuzzyExponentialNaiveBayes::~CybFuzzyExponentialNaiveBayes()
 
 }
 
-CybVectorND<float> CybFuzzyExponentialNaiveBayes::getParameters()
+vector<float>& CybFuzzyExponentialNaiveBayes::getParameters()
 {
 	return parameters;
 }
 
-void CybFuzzyExponentialNaiveBayes::setParameters(CybVectorND<float> parameters)
+void CybFuzzyExponentialNaiveBayes::setParameters(vector<float>& parameters)
 {
 	this->parameters = parameters;
 }
@@ -56,11 +56,17 @@ void CybFuzzyExponentialNaiveBayes::training()
 double CybFuzzyExponentialNaiveBayes::assessment(CybVectorND<float>* auxdata)
 {
 	float* data = auxdata->toArray();
-	
+	cout << "calculando densidade" << endl;
 	double density = 0;		
-	for(int i = 0; i < getVariablesNumber(); i++)
+	for(int i = 0; i < getVariablesNumber(); i++){
+		cout << "densidade antes " << density << endl;
+		cout << "parametro: " << getParameters()[i];
+		cout << "pertinencia: " << getPertinence(data[i], i);
+		cout << "data: " << data[i];
 		density += log(getParameters()[i]) - getParameters()[i]*data[i] + log(getPertinence(data[i], i));
-	
+		cout << "densidade depois " << density << endl;
+	}
+		
 	return density;
 }
 

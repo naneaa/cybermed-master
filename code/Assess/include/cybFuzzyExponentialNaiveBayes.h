@@ -43,7 +43,7 @@ class CybFuzzyExponentialNaiveBayes : public CybFuzzyProbability
 {	
 
 	private:
-		CybVectorND<float> parameters;
+		vector<float> parameters;
 
 	public:
 	/**
@@ -56,9 +56,9 @@ class CybFuzzyExponentialNaiveBayes : public CybFuzzyProbability
 	 */
 	~CybFuzzyExponentialNaiveBayes();
 	
-	CybVectorND<float> getParameters();
+	vector<float>& getParameters();
 	
-	void setParameters(CybVectorND<float>);
+	void setParameters(vector<float>&);
 
 	virtual void training();
 

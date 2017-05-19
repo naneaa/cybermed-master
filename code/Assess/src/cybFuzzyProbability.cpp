@@ -63,6 +63,7 @@ double CybFuzzyProbability::getPertinence(float data, int variable)
 		}else if(data >= (*pertinences)[l][variable].first.first && data < (*pertinences)[l][variable].first.second)
 			return l;
 	}
+	return -50000;
 }
 
 void CybFuzzyProbability::calcPertinences()
