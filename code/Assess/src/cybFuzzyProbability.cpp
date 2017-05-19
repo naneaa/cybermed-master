@@ -54,6 +54,17 @@ void CybFuzzyProbability::setNIntervals(int nIntervals)
 	this->nIntervals = nIntervals;
 }
 
+double CybFuzzyProbability::getPertinence(float data, int variable)
+{
+	for(int l = 0; l < nIntervals; l++){
+		if(l == nIntervals - 1){
+			if(data >= (*pertinences)[l][variable].first.first && data <= (*pertinences)[l][variable].first.second)
+				return l;
+		}else if(data >= (*pertinences)[l][variable].first.first && data < (*pertinences)[l][variable].first.second)
+			return l;
+	}
+}
+
 void CybFuzzyProbability::calcPertinences()
 {	
 	mfList<CybVectorND<float>*>* data = this->getData();
@@ -61,8 +72,9 @@ void CybFuzzyProbability::calcPertinences()
 	
 	//1st - calculate sturges
 	int sturges = round(1 + (3.322*log10(size)));
-	this->nIntervals = sturges;
-	this->pertinences = new CybMatrix < pair< pair<double, double>, double> >(sturges, getVariablesNumber());
+	nIntervals = sturges;
+
+	pertinences = new CybMatrix < pair< pair<double, double>, double> >(sturges, getVariablesNumber());
 	
 	for(int i = 0; i < getVariablesNumber(); i++)
 	{

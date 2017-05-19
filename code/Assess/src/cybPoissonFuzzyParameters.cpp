@@ -44,7 +44,7 @@ double CybPoissonFuzzyParameters::assessment(CybVectorND<>* auxdata)
 {
 	//previously calculates logs in order to reduce running time
 	float* data = auxdata->toArray();
-	vector<double> logs (4, 0);
+	vector<double> logs (getVariablesNumber(), 0);
 	double max = data[0];
 	for(int i = 1; i < getVariablesNumber(); i++)
 		if(max < data[i])
@@ -69,8 +69,8 @@ double CybPoissonFuzzyParameters::assessment(CybVectorND<>* auxdata)
 			double lambda_min = parameters[j][i].first;
 			double lambda_max = parameters[j][i].second;
 						
-			double aux1 = data[i]*(log(lambda_min)) - lambda_min - logs[i];
-			double aux2 = data[i]*(log(lambda_max)) - lambda_max - logs[i];
+			double aux1 = data[i]*(log(lambda_min)) - lambda_min - logs[data[i]];
+			double aux2 = data[i]*(log(lambda_max)) - lambda_max - logs[data[i]];
 		
 			density[j][i].first = aux1 < aux2 ? aux1 : aux2;
 			density[j][i].second = aux1 > aux2 ? aux1 : aux2;	

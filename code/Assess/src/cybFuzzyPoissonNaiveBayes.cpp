@@ -21,30 +21,30 @@
 // Boston, MA 02110-1301, USA.
 // *****************************************************************
 
-#include "cybFuzzyExponentialNaiveBayes.h"
+#include "cybFuzzyPoissonNaiveBayes.h"
 
-CybFuzzyExponentialNaiveBayes::CybFuzzyExponentialNaiveBayes(int variables)
+CybFuzzyPoissonNaiveBayes::CybFuzzyPoissonNaiveBayes(int variables)
 	: CybFuzzyProbability(variables), parameters(variables)
 {
 
 }
 
-CybFuzzyExponentialNaiveBayes::~CybFuzzyExponentialNaiveBayes()
+CybFuzzyPoissonNaiveBayes::~CybFuzzyPoissonNaiveBayes()
 {
 
 }
 
-CybVectorND<float> CybFuzzyExponentialNaiveBayes::getParameters()
+CybVectorND<float> CybFuzzyPoissonNaiveBayes::getParameters()
 {
 	return parameters;
 }
 
-void CybFuzzyExponentialNaiveBayes::setParameters(CybVectorND<float> parameters)
+void CybFuzzyPoissonNaiveBayes::setParameters(CybVectorND<float> parameters)
 {
 	this->parameters = parameters;
 }
 
-void CybFuzzyExponentialNaiveBayes::training()
+void CybFuzzyPoissonNaiveBayes::training()
 {
 	//1st - calculate pertinences
 	calcPertinences();
@@ -53,18 +53,34 @@ void CybFuzzyExponentialNaiveBayes::training()
 	parametersEstimation();
 }
 
-double CybFuzzyExponentialNaiveBayes::assessment(CybVectorND<float>* auxdata)
+double CybFuzzyPoissonNaiveBayes::assessment(CybVectorND<float>* auxdata)
 {
 	float* data = auxdata->toArray();
 	
+	//previously calculates logs in order to reduce running time
+	vector<double> logs (getVariablesNumber(), 0);
+	double max = data[0];
+	for(int i = 1; i < getVariablesNumber(); i++)
+		if(max < data[i])
+			max = data[i];
+		
+	double aux = 0;	
+	for(int j = 2; j < max; j++)
+	{
+		aux += log(j);
+		for(int i = 0; i < getVariablesNumber(); i++)
+			if(data[i] == j)
+				logs[i] = aux;
+	}
+	
 	double density = 0;		
 	for(int i = 0; i < getVariablesNumber(); i++)
-		density += log(getParameters()[i]) - getParameters()[i]*data[i] + log(getPertinence(data[i], i));
+		density += -(getParameters()[i]*data[i]) - logs[data[i]] + log(getPertinence(data[i], i));
 	
 	return density;
 }
 
-void CybFuzzyExponentialNaiveBayes::parametersEstimation()
+void CybFuzzyPoissonNaiveBayes::parametersEstimation()
 {
 	mfList<CybVectorND<float>*>* data = this->getData();
 	int size = data->pos(0)->getDimension();
@@ -83,6 +99,6 @@ void CybFuzzyExponentialNaiveBayes::parametersEstimation()
 	//2nd - calculate lambda
 	for(int i = 0; i < getVariablesNumber(); i++)
 	{
-		parameters[i] = 1/mean[i];
+		parameters[i] = mean[i];
 	}
 }
