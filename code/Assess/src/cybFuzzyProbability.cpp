@@ -39,7 +39,7 @@ CybMatrix < pair< pair<double, double>, double> >* CybFuzzyProbability::getPerti
 	return pertinences;
 }
 
-void CybFuzzyProbability::setPertinences(CybMatrix < pair< pair<double, double>, double> >*)
+void CybFuzzyProbability::setPertinences(CybMatrix < pair< pair<double, double>, double> >* pertinences)
 {
 	this->pertinences = pertinences;
 }
@@ -59,11 +59,24 @@ double CybFuzzyProbability::getPertinence(float data, int variable)
 	for(int l = 0; l < nIntervals; l++){
 		if(l == nIntervals - 1){
 			if(data >= (*pertinences)[l][variable].first.first && data <= (*pertinences)[l][variable].first.second)
-				return l;
+				return (*pertinences)[l][variable].second;
 		}else if(data >= (*pertinences)[l][variable].first.first && data < (*pertinences)[l][variable].first.second)
-			return l;
+			return (*pertinences)[l][variable].second;
 	}
 	return -50000;
+}
+
+double CybFuzzyProbability::getLogPertinence(float data, int variable)
+{
+	for(int l = 0; l < nIntervals; l++)
+	{
+		if(l == nIntervals - 1){
+			if(data >= (*this->getPertinences())[l][variable].first.first && data <= (*this->getPertinences())[l][variable].first.second)
+				return log((*this->getPertinences())[l][variable].second);
+		} else if(data >= (*this->getPertinences())[l][variable].first.first && data < (*this->getPertinences())[l][variable].first.second)
+			return log((*this->getPertinences())[l][variable].second);
+	}
+	return 0;
 }
 
 void CybFuzzyProbability::calcPertinences()

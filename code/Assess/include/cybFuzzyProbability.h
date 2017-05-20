@@ -66,6 +66,8 @@ public:
 	
 	double getPertinence(float, int);
 	
+	double getLogPertinence(float, int);
+	
 	int getNIntervals();
 	
 	void setNIntervals(int);

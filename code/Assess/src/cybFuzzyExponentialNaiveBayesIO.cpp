@@ -95,14 +95,12 @@ void* CybFuzzyExponentialNaiveBayesIO::read()
 	
 	fin >> c >> c >> variables >> c >> c >> nIntervals;
 	
-	CybFuzzyExponentialNaiveBayes* fenb = new CybFuzzyExponentialNaiveBayes(variables);
+	CybFuzzyExponentialNaiveBayes* fenb = new CybFuzzyExponentialNaiveBayes(variables, nIntervals);
 	
-	fenb->setNIntervals(nIntervals);
-
 	while(c != '[')
 		fin >> c;
 		
-	CybMatrix < pair< pair<double, double>, double> > auxPert(nIntervals, variables);
+	CybMatrix < pair< pair<double, double>, double> > *auxPert = new CybMatrix < pair< pair<double, double>, double> > (nIntervals, variables);
 	
 	for(int i = 0; i < variables; i++)
 	{
@@ -111,15 +109,15 @@ void* CybFuzzyExponentialNaiveBayesIO::read()
 			double a = 0, b = 0, d = 0;
 			fin >> a >> c >> b >> c >> c >> d >> c;
 			
-			auxPert[j][i].first.first = a;
-			auxPert[j][i].first.second = b;
-			auxPert[j][i].second = d;		
+			(*auxPert)[j][i].first.first = a;
+			(*auxPert)[j][i].first.second = b;
+			(*auxPert)[j][i].second = d;		
 		}
 		fin >> c >> c; 
 	}
 	
-	fenb->setPertinences(&auxPert);
-	
+	fenb->setPertinences(auxPert);
+
 	while(c != '*')
 		fin >> c;
 	fin >> c;
@@ -133,8 +131,7 @@ void* CybFuzzyExponentialNaiveBayesIO::read()
 	}
 	
 	fenb->setParameters(auxPar);
-	cout << fenb->getParameters()[0] << endl;
-
+	
 	fin.close();
 		
 	return (void*) fenb;

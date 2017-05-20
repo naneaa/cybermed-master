@@ -50,6 +50,8 @@ class CybFuzzyExponentialNaiveBayes : public CybFuzzyProbability
 	 * Constructor.
 	 */
 	CybFuzzyExponentialNaiveBayes(int);
+
+	CybFuzzyExponentialNaiveBayes(int, int);
 	
 	/**
 	 * Destructor.
