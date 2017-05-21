@@ -41,7 +41,6 @@
  
 class CybFuzzyGaussianNaiveBayes : public CybFuzzyProbability
 {	
-
 	private:
 		vector<float> mean;
 		vector<float> stdDev;

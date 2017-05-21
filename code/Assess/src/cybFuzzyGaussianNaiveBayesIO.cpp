@@ -24,7 +24,7 @@
 #include "cybFuzzyGaussianNaiveBayesIO.h"
 
 	
-CybFuzzyGaussianNaiveBayesIO::CybFuzzyGaussianNaiveBayesIO(const char* file_name) : CybAssessIO(file_name, ".cyba_fgnb")
+CybFuzzyGaussianNaiveBayesIO::CybFuzzyGaussianNaiveBayesIO(const char* file_name) : CybAssessIO(file_name, ".cyba_FGNB")
 {
 	
 }
@@ -65,17 +65,29 @@ void CybFuzzyGaussianNaiveBayesIO::write(void* fgnbwork)
 		fout << "**" << endl;
 	}
 	
-	fout << "\nParameters\n";
+	fout << "\nMean\n";
 	fout << "**" << endl;
 	
-	vector<float> auxPar = fgnb->getParameters();
+	vector<float> auxMean = fgnb->getMean();
 	
 	for(int i = 0; i < fgnb->getVariablesNumber(); i++)
 	{
-		fout << auxPar[i] << endl;	
+		fout << auxMean[i] << endl;	
+	}
+	
+	
+	fout << "\nStandard Deviation\n";
+	fout << "##" << endl;
+	
+	vector<float> auxStdDev = fgnb->getStdDev();
+	
+	for(int i = 0; i < fgnb->getVariablesNumber(); i++)
+	{
+		fout << auxStdDev[i] << endl;	
 	}
 	
 	fout << "**" << endl;
+	
 	
 	fout.close();
 }
@@ -95,7 +107,7 @@ void* CybFuzzyGaussianNaiveBayesIO::read()
 	
 	fin >> c >> c >> variables >> c >> c >> nIntervals;
 	
-	CybFuzzyGaussianNaiveBayes* fgnb = new CybFuzzyGaussianNaiveBayes(variables, nIntervals);
+	CybFuzzyGaussianNaiveBayes* fgnb = new CybFuzzyGaussianNaiveBayes(variables);
 	
 	while(c != '[')
 		fin >> c;
@@ -122,15 +134,27 @@ void* CybFuzzyGaussianNaiveBayesIO::read()
 		fin >> c;
 	fin >> c;
 		
-	vector<float> auxPar(variables);
+	vector<float> auxMean(variables);
 	
 	for(int i = 0; i < variables; i++)
 	{
-			float a = 0;
-			fin >> auxPar[i];		
+		fin >> auxMean[i];		
 	}
+
+	fgnb->setMean(auxMean);
+
+	while(c != '#')
+		fin >> c;
+	fin >> c;
+		
+	vector<float> auxStdDev(variables);
 	
-	fgnb->setParameters(auxPar);
+	for(int i = 0; i < variables; i++)
+	{
+		fin >> auxStdDev[i];		
+	}
+
+	fgnb->setStdDev(auxStdDev);
 	
 	fin.close();
 		

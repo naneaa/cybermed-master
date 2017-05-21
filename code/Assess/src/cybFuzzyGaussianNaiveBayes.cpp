@@ -21,40 +21,40 @@
 // Boston, MA 02110-1301, USA.
 // *****************************************************************
 
-#include "cybFuzzyPoissonNaiveBayes.h"
+#include "cybFuzzyGaussianNaiveBayes.h"
 
-CybFuzzyPoissonNaiveBayes::CybFuzzyPoissonNaiveBayes(int variables)
-	: CybFuzzyProbability(variables), mean(variables, 0), stdDev(variables, 0)
+CybFuzzyGaussianNaiveBayes::CybFuzzyGaussianNaiveBayes(int variables)
+	: CybFuzzyProbability(variables), mean(variables), stdDev(variables)
 {
 
 }
 
-CybFuzzyPoissonNaiveBayes::~CybFuzzyPoissonNaiveBayes()
+CybFuzzyGaussianNaiveBayes::~CybFuzzyGaussianNaiveBayes()
 {
 
 }
 
-vector<float>& getMean()
+vector<float>& CybFuzzyGaussianNaiveBayes::getMean()
 {
 	return mean;
 }
 	
-void setMean(vector<float>& mean)
+void CybFuzzyGaussianNaiveBayes::setMean(vector<float>& mean)
 {
 	this->mean = mean;
 }
 
-vector<float>& getStdDev()
+vector<float>& CybFuzzyGaussianNaiveBayes::getStdDev()
 {
 	return stdDev;
 }
 	
-void setStdDev(vector<float>& stdDev)
+void CybFuzzyGaussianNaiveBayes::setStdDev(vector<float>& stdDev)
 {
 	this->stdDev = stdDev;
 }
 
-void CybFuzzyPoissonNaiveBayes::training()
+void CybFuzzyGaussianNaiveBayes::training()
 {
 	//1st - calculate pertinences
 	calcPertinences();
@@ -63,18 +63,18 @@ void CybFuzzyPoissonNaiveBayes::training()
 	parametersEstimation();
 }
 
-double CybFuzzyPoissonNaiveBayes::assessment(CybVectorND<float>* auxdata)
+double CybFuzzyGaussianNaiveBayes::assessment(CybVectorND<float>* auxdata)
 {
 	float* data = auxdata->toArray();
 	
 	double density = 0;		
 	for(int i = 0; i < getVariablesNumber(); i++)
-		density += log(1/stdDev[i]) - (pow(data[i] - media[i], 2)/(2 * pow(stdDev[i], 2))) + getLogPertinence(data[i], i);
+		density += log(1/stdDev[i]) - (pow(data[i] - mean[i], 2)/(2 * pow(stdDev[i], 2))) + getLogPertinence(data[i], i);
 	
 	return density;
 }
 
-void CybFuzzyPoissonNaiveBayes::parametersEstimation()
+void CybFuzzyGaussianNaiveBayes::parametersEstimation()
 {
 	mfList<CybVectorND<float>*>* data = this->getData();
 	int size = data->pos(0)->getDimension();
@@ -94,8 +94,8 @@ void CybFuzzyPoissonNaiveBayes::parametersEstimation()
 	{
 		for(int j = 0; j < size; j++)
 		{
-			stdDev[i] += pow(data->pos(i)->operator[](j) - media[i], 2);
+			stdDev[i] += pow(data->pos(i)->operator[](j) - mean[i], 2);
 		}
-		stdDev[i] /= size - 1;
+		stdDev[i] /= (size - 1);
 	}
 }
