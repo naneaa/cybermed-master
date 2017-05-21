@@ -1,8 +1,8 @@
 // *****************************************************************
 // This file is part of the CYBERMED Libraries
 //
-// Copyright (C) 2007 LabTEVE (http://www.de.ufpb.br/~labteve),
-// Federal University of Paraiba.
+// Copyright (C) 2016 LabTEVE (http://www.de.ufpb.br/~labteve),
+// Federal University of Paraiba and University of São Paulo.
 // All rights reserved.
 //
 // This program is free software; you can redistribute it and/or
@@ -21,57 +21,22 @@
 // Boston, MA 02110-1301, USA.
 // *****************************************************************
 
-#include "cybFuzzyProbability.h"
+#include "cybFuzzyPoissonNaiveBayes.h"
+#include "cybAssessIO.h"
 
-#ifndef _CYB_FuzzyPoissonNaiveBayes_H_
-#define _CYB_FuzzyPoissonNaiveBayes_H_
+#ifndef _CYBFuzzyPoissonNaiveBayesIO_H_
+#define _CYBFuzzyPoissonNaiveBayesIO_H_
 
-/**
- * @class	CybFuzzyPoissonNaiveBayes
- * @file	CybFuzzyPoissonNaiveBayes.h
- * @short	.
- *
- * .
- *
- * @author	LabTEVE (http://www.de.ufpb.br/~labteve), Federal University of Paraiba
- * @version	3.1.1
- * @date	2017, May
- * 
- */
- 
-class CybFuzzyPoissonNaiveBayes : public CybFuzzyProbability
-{	
-
-	private:
-		vector<float> parameters;
-
-	public:
-	/**
-	 * Constructor.
-	 */
-	CybFuzzyPoissonNaiveBayes(int);
-
-	CybFuzzyPoissonNaiveBayes(int, int);
+class CybFuzzyPoissonNaiveBayesIO : public CybAssessIO
+{
+public:
 	
-	/**
-	 * Destructor.
-	 */
-	~CybFuzzyPoissonNaiveBayes();
+	CybFuzzyPoissonNaiveBayesIO(const char*);
+	~CybFuzzyPoissonNaiveBayesIO();
+		
+	void write(void*);
 	
-	vector<float> getParameters();
-	
-	void setParameters(vector<float>);
-
-	virtual void training();
-
-	virtual double assessment(CybVectorND<float>*);
-	
-	protected:
-	
-	void parametersEstimation();
-
-
-
+	void* read();
 };
 
-#endif
+#endif /*_CYBFuzzyPoissonNaiveBayesIO_H_*/

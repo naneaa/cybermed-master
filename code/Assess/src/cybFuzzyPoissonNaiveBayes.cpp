@@ -29,17 +29,24 @@ CybFuzzyPoissonNaiveBayes::CybFuzzyPoissonNaiveBayes(int variables)
 
 }
 
+CybFuzzyPoissonNaiveBayes::CybFuzzyPoissonNaiveBayes(int variables, int nIntervals)
+	: CybFuzzyProbability(variables), parameters(variables)
+{
+	pertinences = new CybMatrix < pair< pair<double, double>, double> >(nIntervals, variables);
+	this -> nIntervals = nIntervals;
+}
+
 CybFuzzyPoissonNaiveBayes::~CybFuzzyPoissonNaiveBayes()
 {
 
 }
 
-CybVectorND<float> CybFuzzyPoissonNaiveBayes::getParameters()
+vector<float> CybFuzzyPoissonNaiveBayes::getParameters()
 {
 	return parameters;
 }
 
-void CybFuzzyPoissonNaiveBayes::setParameters(CybVectorND<float> parameters)
+void CybFuzzyPoissonNaiveBayes::setParameters(vector<float> parameters)
 {
 	this->parameters = parameters;
 }
@@ -75,7 +82,7 @@ double CybFuzzyPoissonNaiveBayes::assessment(CybVectorND<float>* auxdata)
 	
 	double density = 0;		
 	for(int i = 0; i < getVariablesNumber(); i++)
-		density += -(getParameters()[i]*data[i]) - logs[data[i]] + log(getPertinence(data[i], i));
+		density += log(getParameters()[i])*data[i] - getParameters()[i] - logs[data[i]] + getLogPertinence(data[i], i);
 	
 	return density;
 }

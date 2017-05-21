@@ -1,3 +1,3 @@
-./packmanager.sh uninstall utils core assess
-./packmanager.sh clean all
-./packmanager.sh install utils core assess
+./packmanager.sh uninstall assess
+./packmanager.sh clean assess
+./packmanager.sh install assess

@@ -38,6 +38,7 @@ SOURCES		= \
 			  cybFuzzyNaiveBayes.cpp\
 			  cybFuzzyNaiveBayesIO.cpp\
 			  cybFuzzyPoissonNaiveBayes.cpp\
+			  cybFuzzyPoissonNaiveBayesIO.cpp\
 			  cybFuzzyExponentialNaiveBayes.cpp\
 			  cybFuzzyExponentialNaiveBayesIO.cpp\
 			  cybPoissonFuzzyParametersIO.cpp
