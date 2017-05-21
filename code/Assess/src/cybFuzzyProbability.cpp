@@ -58,12 +58,12 @@ double CybFuzzyProbability::getPertinence(float data, int variable)
 {
 	for(int l = 0; l < nIntervals; l++){
 		if(l == nIntervals - 1){
-			if(data >= (*pertinences)[l][variable].first.first && data <= (*pertinences)[l][variable].first.second)
-				return (*pertinences)[l][variable].second;
-		}else if(data >= (*pertinences)[l][variable].first.first && data < (*pertinences)[l][variable].first.second)
-			return (*pertinences)[l][variable].second;
+			if(data >= (*this->getPertinences())[l][variable].first.first && data <= (*this->getPertinences())[l][variable].first.second)
+				return (*this->getPertinences())[l][variable].second;
+		} else if(data >= (*this->getPertinences())[l][variable].first.first && data < (*this->getPertinences())[l][variable].first.second)
+			return (*this->getPertinences())[l][variable].second;
 	}
-	return -50000;
+	return 0;
 }
 
 double CybFuzzyProbability::getLogPertinence(float data, int variable)

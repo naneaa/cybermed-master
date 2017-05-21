@@ -1,8 +1,8 @@
 // *****************************************************************
 // This file is part of the CYBERMED Libraries
 //
-// Copyright (C) 2007 LabTEVE (http://www.de.ufpb.br/~labteve),
-// Federal University of Paraiba.
+// Copyright (C) 2016 LabTEVE (http://www.de.ufpb.br/~labteve),
+// Federal University of Paraiba and University of São Paulo.
 // All rights reserved.
 //
 // This program is free software; you can redistribute it and/or
@@ -21,47 +21,22 @@
 // Boston, MA 02110-1301, USA.
 // *****************************************************************
 
-#include "cybFuzzyProbability.h"
+#include "cybFuzzyGaussianNaiveBayes.h"
+#include "cybAssessIO.h"
 
-#ifndef _CYB_FuzzyNaiveBayes_H_
-#define _CYB_FuzzyNaiveBayes_H_
+#ifndef _CYBFuzzyGaussianNaiveBayesIO_H_
+#define _CYBFuzzyGaussianNaiveBayesIO_H_
 
-/**
- * @class	CybFuzzyNaiveBayes
- * @file	cybFuzzyNaiveBayes.h
- * @short	.
- *
- * .
- *
- * @author	LabTEVE (http://www.de.ufpb.br/~labteve), Federal University of Paraiba
- * @version	3.1.1
- * @date	2017, May
- * 
- */
- 
-class CybFuzzyNaiveBayes : public CybFuzzyProbability
-{	
-
-	public:
-	/**
-	 * Constructor.
-	 */
-	CybFuzzyNaiveBayes(int);
-
-	CybFuzzyNaiveBayes(int, int);
+class CybFuzzyGaussianNaiveBayesIO : public CybAssessIO
+{
+public:
 	
-	/**
-	 * Destructor.
-	 */
-	~CybFuzzyNaiveBayes();
-
-
-	virtual void training();
-
-	virtual double assessment(CybVectorND<float>*);
-
-
-
+	CybFuzzyGaussianNaiveBayesIO(const char*);
+	~CybFuzzyGaussianNaiveBayesIO();
+		
+	void write(void*);
+	
+	void* read();
 };
 
-#endif
+#endif /*_CYBFuzzyGaussianNaiveBayesIO_H_*/

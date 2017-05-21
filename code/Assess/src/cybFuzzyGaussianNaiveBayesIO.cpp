@@ -21,24 +21,24 @@
 // Boston, MA 02110-1301, USA.
 // *****************************************************************
 
-#include "cybFuzzyNaiveBayesIO.h"
+#include "cybFuzzyGaussianNaiveBayesIO.h"
 
 	
-CybFuzzyNaiveBayesIO::CybFuzzyNaiveBayesIO(const char* file_name) : CybAssessIO(file_name, ".cyba_FNB")
+CybFuzzyGaussianNaiveBayesIO::CybFuzzyGaussianNaiveBayesIO(const char* file_name) : CybAssessIO(file_name, ".cyba_fgnb")
 {
 	
 }
 
-CybFuzzyNaiveBayesIO::~CybFuzzyNaiveBayesIO()
+CybFuzzyGaussianNaiveBayesIO::~CybFuzzyGaussianNaiveBayesIO()
 {
 	
 }
-		
-void CybFuzzyNaiveBayesIO::write(void* fnbwork)
+		;
+void CybFuzzyGaussianNaiveBayesIO::write(void* fgnbwork)
 {
-	CybFuzzyNaiveBayes* fnb = (CybFuzzyNaiveBayes*) fnbwork;
+	CybFuzzyGaussianNaiveBayes* fgnb = (CybFuzzyGaussianNaiveBayes*) fgnbwork;
 	
-	ofstream fout(this->getFile()); 
+	ofstream fout(this->getFile(), ofstream::out); 
 	
 	if(fout.fail())
 	{
@@ -47,28 +47,40 @@ void CybFuzzyNaiveBayesIO::write(void* fnbwork)
 		exit(0);
 	}
 		
-	fout << "##" << fnb->getVariablesNumber() << endl; 
+	fout << "##" << fgnb->getVariablesNumber() << endl; 
 	
-	fout << "##" << fnb->getNIntervals() << endl; 
-	
+	fout << "##" << fgnb->getNIntervals() << endl; 
+
 	fout << "\nPertinences\n";
 	fout << "**" << endl;
 	
-	for(int i = 0; i < fnb->getVariablesNumber(); i++)
+	for(int i = 0; i < fgnb->getVariablesNumber(); i++)
 	{
-		for(int j = 0; j < fnb->getNIntervals(); j++)
+		for(int j = 0; j < fgnb->getNIntervals(); j++)
 		{
-			fout << "[" << (*fnb->getPertinences())[j][i].first.first << ", " << 
-				(*fnb->getPertinences())[j][i].first.second << "]:" << 
-				(*fnb->getPertinences())[j][i].second << endl;
+			fout << "[" << (*fgnb->getPertinences())[j][i].first.first << ", " << 
+				(*fgnb->getPertinences())[j][i].first.second << "]:" << 
+				(*fgnb->getPertinences())[j][i].second << endl;
 		}
 		fout << "**" << endl;
 	}
 	
+	fout << "\nParameters\n";
+	fout << "**" << endl;
+	
+	vector<float> auxPar = fgnb->getParameters();
+	
+	for(int i = 0; i < fgnb->getVariablesNumber(); i++)
+	{
+		fout << auxPar[i] << endl;	
+	}
+	
+	fout << "**" << endl;
+	
 	fout.close();
 }
 	
-void* CybFuzzyNaiveBayesIO::read()
+void* CybFuzzyGaussianNaiveBayesIO::read()
 {
 	ifstream fin(this->getFile());
 	
@@ -82,9 +94,12 @@ void* CybFuzzyNaiveBayesIO::read()
 	int variables, nIntervals;
 	
 	fin >> c >> c >> variables >> c >> c >> nIntervals;
-
-	CybFuzzyNaiveBayes* fnb = new CybFuzzyNaiveBayes(variables, nIntervals);
-
+	
+	CybFuzzyGaussianNaiveBayes* fgnb = new CybFuzzyGaussianNaiveBayes(variables, nIntervals);
+	
+	while(c != '[')
+		fin >> c;
+		
 	CybMatrix < pair< pair<double, double>, double> > *auxPert = new CybMatrix < pair< pair<double, double>, double> > (nIntervals, variables);
 	
 	for(int i = 0; i < variables; i++)
@@ -101,10 +116,24 @@ void* CybFuzzyNaiveBayesIO::read()
 		fin >> c >> c; 
 	}
 	
-	fnb->setPertinences(auxPert);
+	fgnb->setPertinences(auxPert);
 
+	while(c != '*')
+		fin >> c;
+	fin >> c;
+		
+	vector<float> auxPar(variables);
+	
+	for(int i = 0; i < variables; i++)
+	{
+			float a = 0;
+			fin >> auxPar[i];		
+	}
+	
+	fgnb->setParameters(auxPar);
+	
 	fin.close();
 		
-	return (void*) fnb;
+	return (void*) fgnb;
 }		
 

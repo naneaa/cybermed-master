@@ -23,12 +23,12 @@
 
 #include "cybFuzzyProbability.h"
 
-#ifndef _CYB_FuzzyNaiveBayes_H_
-#define _CYB_FuzzyNaiveBayes_H_
+#ifndef _CYB_FuzzyGaussianNaiveBayes_H_
+#define _CYB_FuzzyGaussianNaiveBayes_H_
 
 /**
- * @class	CybFuzzyNaiveBayes
- * @file	cybFuzzyNaiveBayes.h
+ * @class	CybFuzzyGaussianNaiveBayes
+ * @file	CybFuzzyGaussianNaiveBayes.h
  * @short	.
  *
  * .
@@ -39,28 +39,39 @@
  * 
  */
  
-class CybFuzzyNaiveBayes : public CybFuzzyProbability
+class CybFuzzyGaussianNaiveBayes : public CybFuzzyProbability
 {	
+
+	private:
+		vector<float> mean;
+		vector<float> stdDev;
 
 	public:
 	/**
 	 * Constructor.
 	 */
-	CybFuzzyNaiveBayes(int);
-
-	CybFuzzyNaiveBayes(int, int);
+	CybFuzzyGaussianNaiveBayes(int);
 	
 	/**
 	 * Destructor.
 	 */
-	~CybFuzzyNaiveBayes();
+	~CybFuzzyGaussianNaiveBayes();
+	
+	vector<float>& getMean();
+	
+	void setMean(vector<float>&);
 
+	vector<float>& getStdDev();
+	
+	void setStdDev(vector<float>&);
 
 	virtual void training();
 
 	virtual double assessment(CybVectorND<float>*);
-
-
+	
+	protected:
+	
+	void parametersEstimation();
 
 };
 

@@ -23,12 +23,12 @@
 
 #include "cybFuzzyProbability.h"
 
-#ifndef _CYB_FuzzyNaiveBayes_H_
-#define _CYB_FuzzyNaiveBayes_H_
+#ifndef _CYB_FuzzyBinomialNaiveBayes_H_
+#define _CYB_FuzzyBinomialNaiveBayes_H_
 
 /**
- * @class	CybFuzzyNaiveBayes
- * @file	cybFuzzyNaiveBayes.h
+ * @class	CybFuzzyBinomialNaiveBayes
+ * @file	CybFuzzyBinomialNaiveBayes.h
  * @short	.
  *
  * .
@@ -39,26 +39,36 @@
  * 
  */
  
-class CybFuzzyNaiveBayes : public CybFuzzyProbability
+class CybFuzzyBinomialNaiveBayes : public CybFuzzyProbability
 {	
+
+	private:
+		vector<float> parameters;
 
 	public:
 	/**
 	 * Constructor.
 	 */
-	CybFuzzyNaiveBayes(int);
+	CybFuzzyBinomialNaiveBayes(int);
 
-	CybFuzzyNaiveBayes(int, int);
+	CybFuzzyBinomialNaiveBayes(int, int);
 	
 	/**
 	 * Destructor.
 	 */
-	~CybFuzzyNaiveBayes();
-
+	~CybFuzzyBinomialNaiveBayes();
+	
+	vector<float>& getParameters();
+	
+	void setParameters(vector<float>&);
 
 	virtual void training();
 
 	virtual double assessment(CybVectorND<float>*);
+	
+	protected:
+	
+	void parametersEstimation();
 
 
 

@@ -21,38 +21,78 @@
 // Boston, MA 02110-1301, USA.
 // *****************************************************************
 
-#include "cybFuzzyNaiveBayes.h"
+#include "cybFuzzyBinomialNaiveBayes.h"
 
-CybFuzzyNaiveBayes::CybFuzzyNaiveBayes(int variables)
-	: CybFuzzyProbability(variables)
+CybFuzzyBinomialNaiveBayes::CybFuzzyBinomialNaiveBayes(int variables)
+	: CybFuzzyProbability(variables), parameters(variables)
 {
 
 }
 
-CybFuzzyNaiveBayes::CybFuzzyNaiveBayes(int variables, int nIntervals)
-	: CybFuzzyProbability(variables)
+CybFuzzyBinomialNaiveBayes::CybFuzzyBinomialNaiveBayes(int variables, int nIntervals)
+	: CybFuzzyProbability(variables), parameters(variables)
 {
 	pertinences = new CybMatrix < pair< pair<double, double>, double> >(nIntervals, variables);
 	this -> nIntervals = nIntervals;
 }
 
-CybFuzzyNaiveBayes::~CybFuzzyNaiveBayes()
+CybFuzzyBinomialNaiveBayes::~CybFuzzyBinomialNaiveBayes()
 {
 
 }
 
-void CybFuzzyNaiveBayes::training()
+vector<float>& CybFuzzyBinomialNaiveBayes::getParameters()
 {
+	return parameters;
+}
+
+void CybFuzzyBinomialNaiveBayes::setParameters(vector<float>& parameters)
+{
+	this->parameters = parameters;
+}
+
+void CybFuzzyBinomialNaiveBayes::training()
+{
+	//1st - calculate pertinences
 	calcPertinences();
+	
+	//2nd - estimate parameters
+	parametersEstimation();
 }
 
-double CybFuzzyNaiveBayes::assessment(CybVectorND<float>* auxdata)
+double CybFuzzyBinomialNaiveBayes::assessment(CybVectorND<float>* auxdata)
 {
 	float* data = auxdata->toArray();
 
 	double density = 0.0;
 	for(int i = 0; i < getVariablesNumber(); i++)
-		density += getLogPertinence(data[i], i);
+		density += 0.0;
+	
 		
 	return density;
+}
+
+void CybFuzzyBinomialNaiveBayes::parametersEstimation()
+{
+	//estimate
+
+	/*mfList<CybVectorND<float>*>* data = this->getData();
+	int size = data->pos(0)->getDimension();
+	 
+	//1st - calculate mean
+	vector<double> mean(getVariablesNumber(), 0);
+	for(int i = 0; i < getVariablesNumber(); i++)
+	{
+		for(int j = 0; j < size; j++)
+		{
+			mean[i] += data->pos(i)->operator[](j);
+		}
+		mean[i] /= size;
+	}
+
+	//2nd - calculate lambda
+	for(int i = 0; i < getVariablesNumber(); i++)
+	{
+		parameters[i] = 1/mean[i];
+	}*/
 }
