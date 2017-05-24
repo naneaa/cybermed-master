@@ -33,12 +33,12 @@ CybFuzzyNaiveBayesIO::~CybFuzzyNaiveBayesIO()
 {
 	
 }
-		
+		;
 void CybFuzzyNaiveBayesIO::write(void* fnbwork)
 {
 	CybFuzzyNaiveBayes* fnb = (CybFuzzyNaiveBayes*) fnbwork;
 	
-	ofstream fout(this->getFile()); 
+	ofstream fout(this->getFile(), ofstream::out); 
 	
 	if(fout.fail())
 	{
@@ -50,7 +50,7 @@ void CybFuzzyNaiveBayesIO::write(void* fnbwork)
 	fout << "##" << fnb->getVariablesNumber() << endl; 
 	
 	fout << "##" << fnb->getNIntervals() << endl; 
-	
+
 	fout << "\nPertinences\n";
 	fout << "**" << endl;
 	
@@ -61,6 +61,20 @@ void CybFuzzyNaiveBayesIO::write(void* fnbwork)
 			fout << "[" << (*fnb->getPertinences())[j][i].first.first << ", " << 
 				(*fnb->getPertinences())[j][i].first.second << "]:" << 
 				(*fnb->getPertinences())[j][i].second << endl;
+		}
+		fout << "**" << endl;
+	}
+	
+	fout << "\nProbability\n";
+	fout << "**" << endl;
+	
+	for(int i = 0; i < fnb->getVariablesNumber(); i++)
+	{
+		for(int j = 0; j < fnb->getNIntervals(); j++)
+		{
+			fout << "[" << (*fnb->getProbability())[j][i].first.first << ", " << 
+				(*fnb->getProbability())[j][i].first.second << "]:" << 
+				(*fnb->getProbability())[j][i].second << endl;
 		}
 		fout << "**" << endl;
 	}
@@ -82,9 +96,12 @@ void* CybFuzzyNaiveBayesIO::read()
 	int variables, nIntervals;
 	
 	fin >> c >> c >> variables >> c >> c >> nIntervals;
-
+	
 	CybFuzzyNaiveBayes* fnb = new CybFuzzyNaiveBayes(variables, nIntervals);
-
+	
+	while(c != '[')
+		fin >> c;
+		
 	CybMatrix < pair< pair<double, double>, double> > *auxPert = new CybMatrix < pair< pair<double, double>, double> > (nIntervals, variables);
 	
 	for(int i = 0; i < variables; i++)
@@ -103,6 +120,27 @@ void* CybFuzzyNaiveBayesIO::read()
 	
 	fnb->setPertinences(auxPert);
 
+	while(c != '[')
+		fin >> c;
+		
+	CybMatrix < pair< pair<double, double>, double> > *auxProb = new CybMatrix < pair< pair<double, double>, double> > (nIntervals, variables);
+	
+	for(int i = 0; i < variables; i++)
+	{
+		for(int j = 0; j < nIntervals; j++)
+		{
+			double a = 0, b = 0, d = 0;
+			fin >> a >> c >> b >> c >> c >> d >> c;
+			
+			(*auxProb)[j][i].first.first = a;
+			(*auxProb)[j][i].first.second = b;
+			(*auxProb)[j][i].second = d;		
+		}
+		fin >> c >> c; 
+	}
+	
+	fnb->setProbability(auxProb);
+	
 	fin.close();
 		
 	return (void*) fnb;

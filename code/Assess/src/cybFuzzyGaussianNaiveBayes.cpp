@@ -29,6 +29,12 @@ CybFuzzyGaussianNaiveBayes::CybFuzzyGaussianNaiveBayes(int variables)
 
 }
 
+CybFuzzyGaussianNaiveBayes::CybFuzzyGaussianNaiveBayes(int variables, int nIntervals)
+	: CybFuzzyProbability(variables, nIntervals), mean(variables), stdDev(variables)
+{
+
+}
+
 CybFuzzyGaussianNaiveBayes::~CybFuzzyGaussianNaiveBayes()
 {
 

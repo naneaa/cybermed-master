@@ -50,6 +50,8 @@ class CybFuzzyGaussianNaiveBayes : public CybFuzzyProbability
 	 * Constructor.
 	 */
 	CybFuzzyGaussianNaiveBayes(int);
+
+	CybFuzzyGaussianNaiveBayes(int, int);
 	
 	/**
 	 * Destructor.

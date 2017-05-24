@@ -33,7 +33,7 @@ CybFuzzyGaussianNaiveBayesIO::~CybFuzzyGaussianNaiveBayesIO()
 {
 	
 }
-		;
+		
 void CybFuzzyGaussianNaiveBayesIO::write(void* fgnbwork)
 {
 	CybFuzzyGaussianNaiveBayes* fgnb = (CybFuzzyGaussianNaiveBayes*) fgnbwork;
@@ -107,7 +107,7 @@ void* CybFuzzyGaussianNaiveBayesIO::read()
 	
 	fin >> c >> c >> variables >> c >> c >> nIntervals;
 	
-	CybFuzzyGaussianNaiveBayes* fgnb = new CybFuzzyGaussianNaiveBayes(variables);
+	CybFuzzyGaussianNaiveBayes* fgnb = new CybFuzzyGaussianNaiveBayes(variables, nIntervals);
 	
 	while(c != '[')
 		fin >> c;

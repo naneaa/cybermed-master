@@ -28,7 +28,7 @@
 
 /**
  * @class	CybFuzzyNaiveBayes
- * @file	cybFuzzyNaiveBayes.h
+ * @file	CybFuzzyNaiveBayes.h
  * @short	.
  *
  * .
@@ -42,6 +42,10 @@
 class CybFuzzyNaiveBayes : public CybFuzzyProbability
 {	
 
+	private:
+
+	CybMatrix < pair< pair<double, double>, double> > *probability;
+
 	public:
 	/**
 	 * Constructor.
@@ -54,11 +58,20 @@ class CybFuzzyNaiveBayes : public CybFuzzyProbability
 	 * Destructor.
 	 */
 	~CybFuzzyNaiveBayes();
+	
+	CybMatrix < pair< pair<double, double>, double> >* getProbability();
+	
+	void setProbability(CybMatrix < pair< pair<double, double>, double> >*);
 
+	double getLogProbability(float, int);
 
 	virtual void training();
 
 	virtual double assessment(CybVectorND<float>*);
+	
+	protected:
+	
+	void parametersEstimation();
 
 
 

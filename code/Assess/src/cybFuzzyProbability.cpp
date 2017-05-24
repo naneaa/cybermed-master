@@ -29,6 +29,13 @@ CybFuzzyProbability::CybFuzzyProbability(int variables)
 	
 }
 
+CybFuzzyProbability::CybFuzzyProbability(int variables, int nIntervals)
+	: CybAssess(variables)
+{
+	pertinences = new CybMatrix < pair< pair<double, double>, double> >(nIntervals, variables);
+	this -> nIntervals = nIntervals;
+}
+
 CybFuzzyProbability::~CybFuzzyProbability()
 {
 	delete pertinences;
@@ -144,7 +151,10 @@ void CybFuzzyProbability::calcPertinences()
 		{
 			(*pertinences)[l][i].first.first = freq[l].first.first;
 			(*pertinences)[l][i].first.second = freq[l].first.second;
-			(*pertinences)[l][i].second = freq[l].second/maxFreq;
+			if(freq[l].second == 0)
+				(*pertinences)[l][i].second = 0.001;
+			else
+				(*pertinences)[l][i].second = freq[l].second/maxFreq;
 		} /*CybMatrix < pair< pair<double, double>, double> > *pertinences;*/
 	}
 }

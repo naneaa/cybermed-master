@@ -30,10 +30,9 @@ CybFuzzyPoissonNaiveBayes::CybFuzzyPoissonNaiveBayes(int variables)
 }
 
 CybFuzzyPoissonNaiveBayes::CybFuzzyPoissonNaiveBayes(int variables, int nIntervals)
-	: CybFuzzyProbability(variables), parameters(variables)
+	: CybFuzzyProbability(variables, nIntervals), parameters(variables)
 {
-	pertinences = new CybMatrix < pair< pair<double, double>, double> >(nIntervals, variables);
-	this -> nIntervals = nIntervals;
+
 }
 
 CybFuzzyPoissonNaiveBayes::~CybFuzzyPoissonNaiveBayes()

@@ -54,6 +54,8 @@ public:
 	 * Constructor.
 	 */
 	CybFuzzyProbability(int);
+
+	CybFuzzyProbability(int, int);
 	
 	/**
 	 * Destructor.

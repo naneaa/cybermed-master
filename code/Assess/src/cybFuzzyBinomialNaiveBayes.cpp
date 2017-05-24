@@ -30,10 +30,9 @@ CybFuzzyBinomialNaiveBayes::CybFuzzyBinomialNaiveBayes(int variables)
 }
 
 CybFuzzyBinomialNaiveBayes::CybFuzzyBinomialNaiveBayes(int variables, int nIntervals)
-	: CybFuzzyProbability(variables), parameters(variables)
+	: CybFuzzyProbability(variables, nIntervals), parameters(variables)
 {
-	pertinences = new CybMatrix < pair< pair<double, double>, double> >(nIntervals, variables);
-	this -> nIntervals = nIntervals;
+	
 }
 
 CybFuzzyBinomialNaiveBayes::~CybFuzzyBinomialNaiveBayes()
@@ -66,7 +65,7 @@ double CybFuzzyBinomialNaiveBayes::assessment(CybVectorND<float>* auxdata)
 
 	double density = 0.0;
 	for(int i = 0; i < getVariablesNumber(); i++)
-		density += 0.0;
+		density += getLogPertinences(data[i], i);
 	
 		
 	return density;
