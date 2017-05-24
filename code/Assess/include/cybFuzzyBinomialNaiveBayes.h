@@ -43,7 +43,10 @@ class CybFuzzyBinomialNaiveBayes : public CybFuzzyProbability
 {	
 
 	private:
-		vector<float> parameters;
+		vector<float> probability;
+
+		/** Parameter N from the Binomial Distribution **/
+		vector<int> N; 
 
 	public:
 	/**
@@ -58,9 +61,13 @@ class CybFuzzyBinomialNaiveBayes : public CybFuzzyProbability
 	 */
 	~CybFuzzyBinomialNaiveBayes();
 	
-	vector<float>& getParameters();
+	vector<float> getProbability();
 	
-	void setParameters(vector<float>&);
+	void setProbability(vector<float>);
+
+	vector<int> getN();
+	
+	void setN(vector<int>);
 
 	virtual void training();
 

@@ -24,13 +24,13 @@
 #include "cybFuzzyBinomialNaiveBayes.h"
 
 CybFuzzyBinomialNaiveBayes::CybFuzzyBinomialNaiveBayes(int variables)
-	: CybFuzzyProbability(variables), parameters(variables)
+	: CybFuzzyProbability(variables), probability(variables), N(variables)
 {
 
 }
 
 CybFuzzyBinomialNaiveBayes::CybFuzzyBinomialNaiveBayes(int variables, int nIntervals)
-	: CybFuzzyProbability(variables, nIntervals), parameters(variables)
+	: CybFuzzyProbability(variables, nIntervals), probability(variables), N(variables)
 {
 	
 }
@@ -40,14 +40,24 @@ CybFuzzyBinomialNaiveBayes::~CybFuzzyBinomialNaiveBayes()
 
 }
 
-vector<float>& CybFuzzyBinomialNaiveBayes::getParameters()
+vector<float> CybFuzzyBinomialNaiveBayes::getProbability()
 {
-	return parameters;
+	return probability;
+}
+	
+void CybFuzzyBinomialNaiveBayes::setProbability(vector<float> probability)
+{
+	this->probability = probability;
 }
 
-void CybFuzzyBinomialNaiveBayes::setParameters(vector<float>& parameters)
+vector<int> CybFuzzyBinomialNaiveBayes::getN()
 {
-	this->parameters = parameters;
+	return N;
+}
+
+void CybFuzzyBinomialNaiveBayes::setN(vector<int> N)
+{
+	this->N = N;
 }
 
 void CybFuzzyBinomialNaiveBayes::training()
@@ -63,35 +73,47 @@ double CybFuzzyBinomialNaiveBayes::assessment(CybVectorND<float>* auxdata)
 {
 	float* data = auxdata->toArray();
 
+	//previously calculates logs in order to reduce running time
+	double max = data[0];
+	for(int i = 1; i < getVariablesNumber(); i++)
+		if(max < data[i])
+			max = data[i];
+		
+	vector<double> logs (max, 0);	
+	for(int j = 2; j < max; j++)
+	{
+		logs[j] = logs[j-1] + log(j);
+	}
+
 	double density = 0.0;
 	for(int i = 0; i < getVariablesNumber(); i++)
-		density += getLogPertinences(data[i], i);
-	
+		density += getLogPertinence(data[i], i) + logs[N[i]] - (logs[data[i]] 
+				+ logs[N[i] - data[i]]) + (data[i] * log(probability[i])) 
+				+ ((N[i] - data[i]) * log(1 - probability[i]));
 		
 	return density;
 }
 
 void CybFuzzyBinomialNaiveBayes::parametersEstimation()
 {
-	//estimate
-
-	/*mfList<CybVectorND<float>*>* data = this->getData();
+	mfList<CybVectorND<float>*>* data = this->getData();
 	int size = data->pos(0)->getDimension();
 	 
-	//1st - calculate mean
-	vector<double> mean(getVariablesNumber(), 0);
+	//1st - estimate N
 	for(int i = 0; i < getVariablesNumber(); i++)
-	{
 		for(int j = 0; j < size; j++)
-		{
-			mean[i] += data->pos(i)->operator[](j);
-		}
-		mean[i] /= size;
-	}
+			if(N[i] < data->pos(i)->operator[](j))
+				N[i] = data->pos(i)->operator[](j);
 
-	//2nd - calculate lambda
+	//2nd - estimate probability p
+	double c1 = 0.1, c2 = 1;
 	for(int i = 0; i < getVariablesNumber(); i++)
-	{
-		parameters[i] = 1/mean[i];
-	}*/
+		for(int j = 0; j < size; j++)
+				probability[i] += data->pos(i)->operator[](j);
+	
+	for(int i = 0; i < getVariablesNumber(); i++)
+		probability[i] = (c1 + probability[i])/(c2 + size);
+
+	for(int i = 0; i < getVariablesNumber(); i++)
+		probability[i] = probability[i]/N[i];
 }
