@@ -21,46 +21,46 @@
 // Boston, MA 02110-1301, USA.
 // *****************************************************************
 
-#include "cybFuzzyGaussianNaiveBayes.h"
+#include "cybFuzzyBetaNaiveBayes.h"
 
-CybFuzzyGaussianNaiveBayes::CybFuzzyGaussianNaiveBayes(int variables)
-	: CybFuzzyProbability(variables), mean(variables), stdDev(variables)
+CybFuzzyBetaNaiveBayes::CybFuzzyBetaNaiveBayes(int variables)
+	: CybFuzzyProbability(variables), alpha(variables), beta(variables)
 {
 
 }
 
-CybFuzzyGaussianNaiveBayes::CybFuzzyGaussianNaiveBayes(int variables, int nIntervals)
-	: CybFuzzyProbability(variables, nIntervals), mean(variables), stdDev(variables)
+CybFuzzyBetaNaiveBayes::CybFuzzyBetaNaiveBayes(int variables, int nIntervals)
+	: CybFuzzyProbability(variables, nIntervals), alpha(variables), beta(variables)
 {
-
-}
-
-CybFuzzyGaussianNaiveBayes::~CybFuzzyGaussianNaiveBayes()
-{
-
-}
-
-vector<float>& CybFuzzyGaussianNaiveBayes::getMean()
-{
-	return mean;
-}
 	
-void CybFuzzyGaussianNaiveBayes::setMean(vector<float>& mean)
-{
-	this->mean = mean;
 }
 
-vector<float>& CybFuzzyGaussianNaiveBayes::getStdDev()
+CybFuzzyBetaNaiveBayes::~CybFuzzyBetaNaiveBayes()
 {
-	return stdDev;
-}
-	
-void CybFuzzyGaussianNaiveBayes::setStdDev(vector<float>& stdDev)
-{
-	this->stdDev = stdDev;
+
 }
 
-void CybFuzzyGaussianNaiveBayes::training()
+void CybFuzzyBetaNaiveBayes::setAlpha(vector<float> alpha)
+{
+	this->alpha = alpha;
+}
+
+vector<float> CybFuzzyBetaNaiveBayes::getAlpha()
+{
+	return alpha;
+}
+
+void CybFuzzyBetaNaiveBayes::setBeta(vector<float> beta)
+{
+	this->beta = beta;
+}
+
+vector<float> CybFuzzyBetaNaiveBayes::getBeta()
+{
+	return beta;
+}
+
+void CybFuzzyBetaNaiveBayes::training()
 {
 	//1st - calculate pertinences
 	calcPertinences();
@@ -69,23 +69,26 @@ void CybFuzzyGaussianNaiveBayes::training()
 	parametersEstimation();
 }
 
-double CybFuzzyGaussianNaiveBayes::assessment(CybVectorND<float>* auxdata)
+double CybFuzzyBetaNaiveBayes::assessment(CybVectorND<float>* auxdata)
 {
 	float* data = auxdata->toArray();
-	
-	double density = 0;		
+
+	double density = 0.0;
 	for(int i = 0; i < getVariablesNumber(); i++)
-		density += log(1/stdDev[i]) - (pow(data[i] - mean[i], 2)/(2 * pow(stdDev[i], 2))) + getLogPertinence(data[i], i);
-	
+		density += getLogPertinence(data[i], i) + log(tgamma(alpha[i] + beta[i]))
+				- (log(tgamma(alpha[i])) + log(tgamma(beta[i]))) + ((alpha[i] - 1) * log(data[i])) 
+				+ ((beta[i] - 1) * log(1 - data[i]));
+		
 	return density;
 }
 
-void CybFuzzyGaussianNaiveBayes::parametersEstimation()
+void CybFuzzyBetaNaiveBayes::parametersEstimation()
 {
 	mfList<CybVectorND<float>*>* data = this->getData();
 	int size = data->pos(0)->getDimension();
-	 
+
 	//1st - calculate mean
+	vector<float> mean(getVariablesNumber());
 	for(int i = 0; i < getVariablesNumber(); i++)
 	{
 		for(int j = 0; j < size; j++)
@@ -96,12 +99,33 @@ void CybFuzzyGaussianNaiveBayes::parametersEstimation()
 	}
 
 	//2nd - calculate standard deviation
+	vector<float> variance(getVariablesNumber());
 	for(int i = 0; i < getVariablesNumber(); i++)
 	{
 		for(int j = 0; j < size; j++)
 		{
-			stdDev[i] += pow(data->pos(i)->operator[](j) - mean[i], 2);
+			variance[i] += pow(data->pos(i)->operator[](j) - mean[i], 2);
 		}
-		stdDev[i] /= (size - 1);
+		variance[i] /= (size - 1);
 	}
+
+	for(int i = 0; i < getVariablesNumber(); i++)
+	{
+		variance[i] = (size - 1) * (variance[i] / size); //fator de correcao populacional
+	}
+
+	//1st - estimate alpha
+	for(int i = 0; i < getVariablesNumber(); i++)
+	{
+		alpha[i] = mean[i]*(((mean[i] * (1 - mean[i]))/variance[i]) - 1);
+	}	
+	
+	//2nd - estimate beta
+	for(int i = 0; i < getVariablesNumber(); i++)
+	{
+		beta[i] = (alpha[i]/mean[i]) - alpha[i];
+	}	
+	
+	
+	
 }

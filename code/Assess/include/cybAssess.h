@@ -25,6 +25,7 @@
 using namespace std;
 #include "mf/mfList.h"
 #include "cybVectorND.h"
+#include <cmath>
 
 using namespace mf;
 
