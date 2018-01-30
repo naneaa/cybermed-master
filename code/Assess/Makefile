@@ -34,6 +34,7 @@ SOURCES		= \
 			  cybMLMIO.cpp\
 			  cybProbabilityFuzzyParameters.cpp\
 			  cybPoissonFuzzyParameters.cpp\
+			  cybPoissonFuzzyParametersIO.cpp\
 			  cybFuzzyProbability.cpp\
 			  cybFuzzyNaiveBayes.cpp\
 			  cybFuzzyNaiveBayesIO.cpp\
@@ -47,7 +48,8 @@ SOURCES		= \
 			  cybFuzzyPoissonNaiveBayesIO.cpp\
 			  cybFuzzyExponentialNaiveBayes.cpp\
 			  cybFuzzyExponentialNaiveBayesIO.cpp\
-			  cybPoissonFuzzyParametersIO.cpp
+			  cybGammaNaiveBayes.cpp
+			  
 			
 SRCS		= $(addprefix $(SRCDIR)/,$(SOURCES))
 OBJS		= $(SRCS:.cpp=.o)
