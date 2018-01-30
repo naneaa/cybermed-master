@@ -48,7 +48,9 @@ SOURCES		= \
 			  cybFuzzyPoissonNaiveBayesIO.cpp\
 			  cybFuzzyExponentialNaiveBayes.cpp\
 			  cybFuzzyExponentialNaiveBayesIO.cpp\
-			  cybGammaNaiveBayes.cpp
+			  cybGammaNaiveBayes.cpp\
+			  cybGammaNaiveBayesIO.cpp
+			  
 			  
 			
 SRCS		= $(addprefix $(SRCDIR)/,$(SOURCES))
