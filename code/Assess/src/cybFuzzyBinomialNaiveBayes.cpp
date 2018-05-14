@@ -101,9 +101,7 @@ void CybFuzzyBinomialNaiveBayes::parametersEstimation()
 	 
 	//1st - estimate N
 	for(int i = 0; i < getVariablesNumber(); i++)
-		for(int j = 0; j < size; j++)
-			if(N[i] < data->pos(i)->operator[](j))
-				N[i] = data->pos(i)->operator[](j);
+		N[i] = size;
 
 	//2nd - estimate probability p
 	double c1 = 0.1, c2 = 1;
